@@ -1,0 +1,81 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CampusFix college complaint and maintenance management system">
+    <title>{% block title %}CampusFix{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <a class="visually-hidden-focusable skip-link" href="#main-content">Skip to main content</a>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" aria-label="Primary navigation">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'core:landing' %}">
+                <span class="brand-mark" aria-hidden="true">CF</span>
+                <span>CampusFix</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:landing' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:landing' %}#workflow">How it works</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'core:landing' %}#roles">Roles</a></li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
+                    {% if user.role == 'STUDENT' %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'complaints:create' %}">Report an issue</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'complaints:list' %}">My complaints</a></li>
+                    {% elif user.role == 'STAFF' %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'complaints:staff_queue' %}">My assigned work</a></li>
+                    {% elif user.role == 'ADMIN' %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'complaints:admin_queue' %}">Manage complaints</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'complaints:analytics' %}">Analytics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'complaints:reports' %}">Reports</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link notification-link" href="{% url 'complaints:notifications' %}">Notifications{% if unread_notification_count %}<span class="notification-count">{{ unread_notification_count }}</span>{% endif %}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a></li>
+                    <li class="nav-item user-summary"><span>{{ user.display_name }}</span><span class="role-badge">{{ user.get_role_display }}</span></li>
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+                            {% csrf_token %}
+                            <button class="btn btn-outline-light btn-sm" type="submit">Log out</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Log in</a></li>
+                    <li class="nav-item"><a class="btn btn-light" href="{% url 'accounts:register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container message-area" aria-live="polite">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main id="main-content" class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer mt-auto">
+        <div class="container py-4 d-flex flex-column flex-md-row justify-content-between gap-2">
+            <span>&copy; {% now "Y" %} CampusFix</span>
+            <span>Academic mini project &middot; Campus complaint workflow and reporting</span>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

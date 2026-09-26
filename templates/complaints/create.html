@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Report an issue | CampusFix{% endblock %}
+
+{% block content %}
+<section class="account-page"><div class="container"><div class="account-card account-card-wide"><div class="account-heading"><span class="section-label">New campus complaint</span><h1>Report an issue</h1><p>Give the maintenance team clear, accurate information. Your identity, ticket number, and Submitted status are added securely by CampusFix.</p></div>
+{% if not form.fields.category.queryset.exists or not form.fields.location.queryset.exists %}<div class="alert alert-warning">Complaint reference data is not ready. Ask an administrator to create active categories and locations.</div>{% endif %}
+<form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}<div class="row g-3">{% for field in form %}<div class="{% if field.name == 'description' or field.name == 'evidence_image' %}col-12{% else %}col-md-6{% endif %}">{% include "accounts/form_field.html" with field=field %}</div>{% endfor %}</div><div class="d-flex gap-2 flex-wrap mt-2"><button class="btn btn-primary" type="submit">Submit complaint</button><a class="btn btn-outline-secondary" href="{% url 'complaints:list' %}">Cancel</a></div></form>
+</div></div></section>
+{% endblock %}

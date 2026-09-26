@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found | CampusFix{% endblock %}
+
+{% block content %}
+<section class="error-page">
+    <div class="container text-center">
+        <span class="error-code">404</span>
+        <h1>Page not found</h1>
+        <p>The page may have moved, or the address may be incorrect.</p>
+        <a class="btn btn-primary" href="{% url 'core:landing' %}">Return to the homepage</a>
+    </div>
+</section>
+{% endblock %}
+

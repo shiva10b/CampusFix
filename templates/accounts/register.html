@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Student registration | CampusFix{% endblock %}
+
+{% block content %}
+<section class="account-page">
+    <div class="container">
+        <div class="account-card account-card-wide">
+            <div class="account-heading"><span class="section-label">Student access</span><h1>Create your CampusFix account</h1><p>Register to use the student dashboard. Staff and administrator accounts are created only by authorised administrators.</p></div>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+                <div class="row g-3">
+                    {% for field in form %}<div class="col-md-6">{% include "accounts/form_field.html" with field=field %}</div>{% endfor %}
+                </div>
+                <button class="btn btn-primary w-100 mt-2" type="submit">Create student account</button>
+            </form>
+            <p class="account-switch">Already registered? <a href="{% url 'accounts:login' %}">Log in</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

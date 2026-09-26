@@ -1,0 +1,5 @@
+<ol class="timeline-list">
+{% for event in timeline %}
+<li><span class="timeline-marker"></span><div><div class="d-flex flex-wrap justify-content-between gap-2"><strong>{{ event.get_action_display }}</strong><time>{{ event.created_at|date:"d M Y, g:i A" }}</time></div><p>{% if event.previous_status and event.new_status %}{{ event.get_previous_status_display }} → {{ event.get_new_status_display }}{% elif event.new_status %}{{ event.get_new_status_display }}{% endif %}{% if event.actor %} · by {{ event.actor.display_name }}{% endif %}</p>{% if event.note %}<blockquote>{{ event.note }}</blockquote>{% endif %}</div></li>
+{% empty %}<li><div><p>No timeline events are available.</p></div></li>{% endfor %}
+</ol>

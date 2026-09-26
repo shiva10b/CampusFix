@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}CampusFix | Better campus maintenance{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container py-5">
+        <div class="row align-items-center g-5 py-lg-5">
+            <div class="col-lg-7">
+                <span class="eyebrow">A clearer way to care for campus</span>
+                <h1 class="display-4 fw-bold mt-3">Report problems. Track progress. Build a better campus.</h1>
+                <p class="lead mt-4">CampusFix brings students, administrators, and maintenance teams into one transparent workflow for reporting and resolving campus issues.</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    {% if user.is_authenticated %}<a class="btn btn-primary btn-lg" href="{% url 'accounts:dashboard' %}">Open dashboard</a>{% else %}<a class="btn btn-primary btn-lg" href="{% url 'accounts:register' %}">Create student account</a>{% endif %}
+                    <a class="btn btn-outline-light btn-lg" href="#workflow">Explore the workflow</a>
+                </div>
+                <p class="small mt-3 mb-0 hero-note">Secure accounts and role dashboards are available. Complaint reporting arrives in Batch 3.</p>
+            </div>
+            <div class="col-lg-5">
+                <div class="hero-panel" aria-label="CampusFix overview">
+                    <div class="status-row"><span class="status-dot submitted"></span><div><strong>Submitted</strong><small>Issue safely recorded</small></div></div>
+                    <div class="status-line"></div>
+                    <div class="status-row"><span class="status-dot assigned"></span><div><strong>Assigned</strong><small>Right team takes ownership</small></div></div>
+                    <div class="status-line"></div>
+                    <div class="status-row"><span class="status-dot resolved"></span><div><strong>Resolved</strong><small>Student confirms the outcome</small></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-space" id="problem">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-6">
+                <span class="section-label">The problem</span>
+                <h2 class="section-title">Campus issues should not disappear into informal messages.</h2>
+            </div>
+            <div class="col-lg-6">
+                <p class="section-copy">Broken equipment, electrical faults, water problems, Wi-Fi failures, cleanliness concerns, and infrastructure damage need a reliable record. CampusFix is designed to give every issue clear ownership, visible progress, and a documented outcome.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-space bg-soft" id="workflow">
+    <div class="container">
+        <div class="text-center section-heading">
+            <span class="section-label">Planned workflow</span>
+            <h2 class="section-title">From report to resolution</h2>
+            <p class="section-copy mx-auto">A transparent seven-stage lifecycle will keep everyone informed.</p>
+        </div>
+        <div class="row g-4 mt-2">
+            <div class="col-md-4"><article class="feature-card h-100"><span class="step-number">01</span><h3>Report</h3><p>Students will submit the category, location, description, urgency, and an optional image.</p></article></div>
+            <div class="col-md-4"><article class="feature-card h-100"><span class="step-number">02</span><h3>Review & assign</h3><p>Administrators will check the request, set direction, and assign appropriate maintenance staff.</p></article></div>
+            <div class="col-md-4"><article class="feature-card h-100"><span class="step-number">03</span><h3>Resolve & confirm</h3><p>Staff will record progress and resolution notes; students will track the work and provide feedback.</p></article></div>
+        </div>
+    </div>
+</section>
+
+<section class="section-space" id="roles">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-label">Role-based access</span>
+            <h2 class="section-title">The right view for every person</h2>
+        </div>
+        <div class="row g-4 mt-2">
+            <div class="col-lg-4"><article class="role-card student h-100"><div class="role-icon">S</div><h3>Student</h3><p>Report problems, follow timelines, receive updates, and rate completed work.</p></article></div>
+            <div class="col-lg-4"><article class="role-card staff h-100"><div class="role-icon">M</div><h3>Maintenance staff</h3><p>View assigned work, update progress, and document how each issue was resolved.</p></article></div>
+            <div class="col-lg-4"><article class="role-card admin-role h-100"><div class="role-icon">A</div><h3>Administrator</h3><p>Review requests, manage assignments, monitor performance, and export reports.</p></article></div>
+        </div>
+    </div>
+</section>
+
+<section class="section-space bg-dark-section">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5"><span class="section-label light">Planned benefits</span><h2 class="section-title text-white">Accountability without complexity</h2></div>
+            <div class="col-lg-7">
+                <div class="benefit-grid">
+                    <div><strong>Traceable</strong><span>Ticket numbers and complete history</span></div>
+                    <div><strong>Prioritised</strong><span>Transparent rule-based scoring</span></div>
+                    <div><strong>Measurable</strong><span>Analytics, ratings, and reports</span></div>
+                    <div><strong>Accessible</strong><span>Responsive interface for any device</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="future-strip mt-5"><strong>Available now:</strong> secure student registration, sign-in, profiles, and role dashboards. <strong>Future batches:</strong> complaints, assignment workflow, timeline, notifications, feedback, analytics, and CSV reporting.</div>
+    </div>
+</section>
+{% endblock %}

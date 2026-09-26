@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Your profile | CampusFix{% endblock %}
+
+{% block content %}
+<section class="account-page profile-page"><div class="container"><div class="row g-4">
+    <div class="col-lg-5"><div class="account-card h-100"><span class="section-label">Account details</span><h1>{{ user.display_name }}</h1><dl class="profile-details"><div><dt>Username</dt><dd>{{ user.username }}</dd></div><div><dt>Email</dt><dd>{{ user.email }}</dd></div><div><dt>Role</dt><dd>{{ user.get_role_display }}</dd></div><div><dt>Student ID</dt><dd>{{ user.student_id|default:"Not applicable" }}</dd></div><div><dt>Employee ID</dt><dd>{{ user.employee_id|default:"Not applicable" }}</dd></div><div><dt>Joined</dt><dd>{{ user.date_joined|date:"d M Y, g:i A" }}</dd></div></dl><a class="btn btn-outline-primary" href="{% url 'accounts:password_change' %}">Change password</a></div></div>
+    <div class="col-lg-7"><div class="account-card h-100"><div class="account-heading"><span class="section-label">Personal information</span><h2>Update your profile</h2><p>Your role, username, email, and institutional ID are protected from self-service changes.</p></div><form method="post" novalidate>{% csrf_token %}{% for field in form %}{% include "accounts/form_field.html" with field=field %}{% endfor %}<button class="btn btn-primary" type="submit">Save profile</button></form></div></div>
+</div></div></section>
+{% endblock %}

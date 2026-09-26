@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard-page">
+    <div class="container">
+        <div class="dashboard-header d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-end">
+            <div><span class="section-label">{% block dashboard_label %}{% endblock %}</span><h1>Welcome, {{ user.display_name }}</h1><p>{% block dashboard_intro %}{% endblock %}</p></div>
+            {% block dashboard_action %}{% endblock %}
+        </div>
+        {% block dashboard_body %}{% endblock %}
+    </div>
+</section>
+{% endblock %}

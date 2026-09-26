@@ -1,0 +1,14 @@
+{% extends "accounts/dashboard_base.html" %}
+{% block title %}Student dashboard | CampusFix{% endblock %}
+{% block dashboard_label %}Student dashboard{% endblock %}
+{% block dashboard_intro %}Report campus issues and track every ticket from one place.{% endblock %}
+{% block dashboard_action %}<div class="d-flex gap-2 flex-wrap"><a class="btn btn-primary" href="{% url 'complaints:create' %}">Report an issue</a><a class="btn btn-outline-light" href="{% url 'complaints:list' %}">View my complaints</a></div>{% endblock %}
+{% block dashboard_body %}
+<div class="row g-4 dashboard-stats"><div class="col-md-3"><div class="stat-card"><span>Total complaints</span><strong>{{ total_complaints }}</strong></div></div><div class="col-md-3"><div class="stat-card"><span>Active complaints</span><strong>{{ active_complaints }}</strong></div></div><div class="col-md-3"><div class="stat-card"><span>Resolved complaints</span><strong>{{ resolved_complaints }}</strong></div></div><div class="col-md-3"><div class="stat-card"><span>Unread notifications</span><strong>{{ unread_notification_count }}</strong></div></div></div>
+{% if recent_complaints %}
+<div class="d-flex justify-content-between align-items-center mt-5 mb-3"><h2 class="dashboard-section-title m-0">Recent complaints</h2><a href="{% url 'complaints:list' %}">View all</a></div>
+<div class="ticket-list">{% for complaint in recent_complaints %}<a class="ticket-row" href="{% url 'complaints:detail' complaint.ticket_number %}"><div><strong>{{ complaint.ticket_number }}</strong><span>{{ complaint.title }}</span></div><div class="ticket-row-meta"><span class="priority-badge priority-{{ complaint.priority_level|lower }}">{{ complaint.get_priority_level_display }}</span><span class="status-badge status-{{ complaint.status|lower }}">{{ complaint.get_status_display }}</span><time>{{ complaint.created_at|date:"d M Y" }}</time></div></a>{% endfor %}</div>
+{% else %}
+<div class="empty-state"><div class="empty-icon">S</div><h2>No complaints yet</h2><p>When you notice a campus maintenance problem, submit it here to receive a trackable ticket number.</p><a class="btn btn-primary mt-3" href="{% url 'complaints:create' %}">Report your first issue</a></div>
+{% endif %}
+{% endblock %}
