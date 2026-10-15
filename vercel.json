@@ -6,10 +6,10 @@
       "includeFiles": "staticfiles/**"
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/api"
+      "src": "/(.*)",
+      "dest": "/api/index.py"
     }
   ]
 }
