@@ -8,6 +8,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 
+from .decorators import management_roles
 from .decorators import role_required
 from .forms import (
     CampusFixAuthenticationForm,
@@ -64,7 +65,10 @@ def dashboard_router(request):
     destinations = {
         User.Role.STUDENT: "accounts:student_dashboard",
         User.Role.STAFF: "accounts:staff_dashboard",
+        User.Role.COORDINATOR: "accounts:admin_dashboard",
+        User.Role.DEAN: "accounts:admin_dashboard",
         User.Role.ADMIN: "accounts:admin_dashboard",
+        User.Role.SUPERADMIN: "accounts:admin_dashboard",
     }
     return redirect(destinations[request.user.role])
 
@@ -102,7 +106,7 @@ def staff_dashboard(request):
     return render(request, "accounts/dashboard_staff.html", context)
 
 
-@role_required(User.Role.ADMIN)
+@role_required(*management_roles())
 def admin_dashboard(request):
     from complaints.models import Complaint
 
@@ -120,6 +124,16 @@ def admin_dashboard(request):
         closed=Count("id", filter=Q(status=Complaint.Status.CLOSED)),
         rejected=Count("id", filter=Q(status=Complaint.Status.REJECTED)),
     )
+    if request.user.role == User.Role.COORDINATOR:
+        complaints = Complaint.objects.filter(student__department__iexact=request.user.department)
+        complaint_counts = {
+            "total": complaints.count(),
+            "awaiting": complaints.filter(status__in=("SUBMITTED", "UNDER_REVIEW")).count(),
+            "active_work": complaints.filter(status__in=("ASSIGNED", "IN_PROGRESS")).count(),
+            "resolved": complaints.filter(status="RESOLVED").count(),
+            "closed": complaints.filter(status="CLOSED").count(),
+            "rejected": complaints.filter(status="REJECTED").count(),
+        }
     priority_summary = Complaint.objects.aggregate(
         low=Count("id", filter=Q(priority_level=Complaint.Priority.LOW)),
         medium=Count("id", filter=Q(priority_level=Complaint.Priority.MEDIUM)),
@@ -129,6 +143,7 @@ def admin_dashboard(request):
     from complaints.models import ComplaintFeedback
     feedback_summary = ComplaintFeedback.objects.aggregate(total=Count("id"), average=Avg("rating"))
     return render(request, "accounts/dashboard_admin.html", {"counts": counts, "complaint_counts": complaint_counts, "priority_summary": priority_summary, "feedback_summary": feedback_summary})
+
 
 
 @login_required

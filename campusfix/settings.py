@@ -93,6 +93,12 @@ WSGI_APPLICATION = "campusfix.wsgi.application"
 ASGI_APPLICATION = "campusfix.asgi.application"
 
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+if PRODUCTION and not DATABASE_URL:
+    raise ImproperlyConfigured(
+        "DATABASE_URL must be set in production; configure the Neon connection string "
+        "in Vercel Project Settings."
+    )
+
 if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(

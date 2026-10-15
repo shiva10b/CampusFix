@@ -242,6 +242,23 @@ AWS_S3_CUSTOM_DOMAIN=<optional-media-CDN-domain>
 AWS_QUERYSTRING_AUTH=True
 ```
 
+### College account hierarchy
+
+CampusFix uses separate accounts for each person and does not provide public
+administrator registration. The supported roles are:
+
+- **Student**: submits complaints and tracks only their own tickets.
+- **Maintenance Staff**: sees and updates only complaints assigned to them.
+- **Teacher / Department Coordinator**: manages complaints from their own department.
+- **Dean**: manages complaints across all departments.
+- **Administrator / Super Administrator**: institution-wide management and administration.
+
+Create these accounts through Django Admin or a trusted management workflow.
+Never share a common administrator login. For local demonstration accounts,
+run `py manage.py create_demo_users`; this creates `coordinator_demo` and
+`dean_demo` in addition to the existing student, staff, and administrator
+accounts. Demo passwords are for local development only.
+
 Apply production variables to Production and the appropriate Preview environments. Vercel supplies `VERCEL_URL` automatically; CampusFix trusts that exact generated hostname while custom domains still remain explicit.
 
 ### 3. Prepare the production database and static files

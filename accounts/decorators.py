@@ -18,3 +18,15 @@ def role_required(*allowed_roles):
         return wrapped
 
     return decorator
+
+
+def management_roles():
+    """Roles allowed to manage complaints, from department to institution level."""
+    from .models import User
+
+    return (
+        User.Role.COORDINATOR,
+        User.Role.DEAN,
+        User.Role.ADMIN,
+        User.Role.SUPERADMIN,
+    )

@@ -12,7 +12,9 @@ MIN_NOTE_LENGTH = 10
 
 
 def _require_admin(actor):
-    if not actor.is_authenticated or actor.role != User.Role.ADMIN:
+    if not actor.is_authenticated or actor.role not in {
+        User.Role.COORDINATOR, User.Role.DEAN, User.Role.ADMIN, User.Role.SUPERADMIN
+    }:
         raise PermissionDenied
 
 

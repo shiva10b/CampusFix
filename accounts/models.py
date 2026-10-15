@@ -14,10 +14,13 @@ class User(AbstractUser):
     class Role(models.TextChoices):
         STUDENT = "STUDENT", "Student"
         STAFF = "STAFF", "Maintenance Staff"
+        COORDINATOR = "COORDINATOR", "Teacher / Department Coordinator"
+        DEAN = "DEAN", "Dean"
         ADMIN = "ADMIN", "Administrator"
+        SUPERADMIN = "SUPERADMIN", "Super Administrator"
 
     role = models.CharField(
-        max_length=10,
+        max_length=12,
         choices=Role.choices,
         default=Role.STUDENT,
         db_index=True,

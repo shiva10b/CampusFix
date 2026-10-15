@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 
-from accounts.decorators import role_required
+from accounts.decorators import management_roles, role_required
 from accounts.models import User
 
 from .decorators import student_required
@@ -70,9 +70,11 @@ def complaint_detail(request, ticket_number):
     return render(request, "complaints/detail.html", {"complaint": complaint, "timeline": complaint.history.select_related("actor")})
 
 
-@role_required(User.Role.ADMIN)
+@role_required(*management_roles())
 def administrator_queue(request):
     complaints = Complaint.objects.select_related("student", "category", "location", "assigned_to")
+    if request.user.role == User.Role.COORDINATOR:
+        complaints = complaints.filter(student__department__iexact=request.user.department)
     search = request.GET.get("q", "").strip()
     status = request.GET.get("status", "").strip()
     category = request.GET.get("category", "").strip()
@@ -112,9 +114,11 @@ def administrator_queue(request):
     return render(request, "complaints/admin_queue.html", context)
 
 
-@role_required(User.Role.ADMIN)
+@role_required(*management_roles())
 def administrator_detail(request, ticket_number):
     complaint = get_object_or_404(Complaint.objects.select_related("student", "category", "location", "assigned_to"), ticket_number=ticket_number)
+    if request.user.role == User.Role.COORDINATOR and complaint.student.department.casefold() != request.user.department.casefold():
+        return render(request, "403.html", status=403)
     form = AdministratorActionForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         try:
@@ -234,11 +238,14 @@ def notifications_mark_all_read(request):
     return redirect("complaints:notifications")
 
 
-@role_required(User.Role.ADMIN)
+@role_required(*management_roles())
 def analytics(request):
     period = request.GET.get("period", "all")
     complaints = Complaint.objects.all()
     feedback = ComplaintFeedback.objects.all()
+    if request.user.role == User.Role.COORDINATOR:
+        complaints = complaints.filter(student__department__iexact=request.user.department)
+        feedback = feedback.filter(complaint__student__department__iexact=request.user.department)
     if period in {"30", "90"}:
         since = timezone.now() - timedelta(days=int(period))
         complaints = complaints.filter(created_at__gte=since)
@@ -264,10 +271,12 @@ def _report_data(request):
     form = ReportFilterForm(request.GET)
     valid = form.is_valid()
     complaints = filtered_complaints(form.cleaned_data) if valid else Complaint.objects.none()
+    if request.user.role == User.Role.COORDINATOR:
+        complaints = complaints.filter(student__department__iexact=request.user.department)
     return form, complaints, valid
 
 
-@role_required(User.Role.ADMIN)
+@role_required(*management_roles())
 def reports(request):
     form, complaints, valid = _report_data(request)
     query = request.GET.copy()
@@ -284,7 +293,7 @@ def reports(request):
     return render(request, "complaints/reports.html", context)
 
 
-@role_required(User.Role.ADMIN)
+@role_required(*management_roles())
 def report_print(request):
     form, complaints, valid = _report_data(request)
     return render(request, "complaints/report_print.html", {
@@ -293,7 +302,7 @@ def report_print(request):
     })
 
 
-@role_required(User.Role.ADMIN)
+@role_required(*management_roles())
 def complaint_csv(request):
     form, complaints, valid = _report_data(request)
     if not valid:
@@ -306,7 +315,7 @@ def complaint_csv(request):
     return csv_response("campusfix-complaints.csv", ("Ticket", "Title", "Student", "Category", "Location", "Urgency", "Priority", "Score", "Status", "Assigned staff", "Created", "Updated", "Feedback rating"), rows)
 
 
-@role_required(User.Role.ADMIN)
+@role_required(*management_roles())
 def workload_csv(request):
     form, complaints, valid = _report_data(request)
     if not valid:
@@ -315,7 +324,7 @@ def workload_csv(request):
     return csv_response("campusfix-staff-workload.csv", ("Staff", "Employee ID", "Assigned", "In Progress", "Resolved", "Total Active", "Average Feedback"), rows)
 
 
-@role_required(User.Role.ADMIN)
+@role_required(*management_roles())
 def feedback_csv(request):
     form, complaints, valid = _report_data(request)
     if not valid:
