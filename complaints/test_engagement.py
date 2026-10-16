@@ -1,4 +1,5 @@
 from io import BytesIO
+from tempfile import TemporaryDirectory
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -52,7 +53,8 @@ class PriorityTests(EngagementBase):
     def test_evidence_adds_five_points(self):
         content = BytesIO(); Image.new("RGB", (5, 5), "red").save(content, "PNG")
         image = SimpleUploadedFile("proof.png", content.getvalue(), content_type="image/png")
-        complaint = self.complaint(evidence_image=image)
+        with TemporaryDirectory() as media_root, override_settings(MEDIA_ROOT=media_root):
+            complaint = self.complaint(evidence_image=image)
         self.assertEqual(complaint.priority_score, 60)
         self.assertIn("5 evidence points", complaint.priority_explanation)
 

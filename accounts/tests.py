@@ -124,7 +124,14 @@ class AuthenticationTests(TestCase):
 
 
 class DashboardPermissionTests(TestCase):
-    routes = {User.Role.STUDENT: "accounts:student_dashboard", User.Role.STAFF: "accounts:staff_dashboard", User.Role.ADMIN: "accounts:admin_dashboard"}
+    routes = {
+        User.Role.STUDENT: "accounts:student_dashboard",
+        User.Role.STAFF: "accounts:staff_dashboard",
+        User.Role.COORDINATOR: "accounts:admin_dashboard",
+        User.Role.DEAN: "accounts:admin_dashboard",
+        User.Role.ADMIN: "accounts:admin_dashboard",
+        User.Role.SUPERADMIN: "accounts:admin_dashboard",
+    }
 
     def setUp(self):
         self.users = {role: create_user(role.lower(), role) for role in User.Role.values}
@@ -139,7 +146,11 @@ class DashboardPermissionTests(TestCase):
             self.client.force_login(user)
             for destination_role, route in self.routes.items():
                 response = self.client.get(reverse(route))
-                expected = 200 if role == destination_role else 403
+                same_dashboard = (
+                    role == destination_role
+                    or route == self.routes.get(role)
+                )
+                expected = 200 if same_dashboard else 403
                 self.assertEqual(response.status_code, expected, f"{role} -> {destination_role}")
                 if expected == 403:
                     self.assertTemplateUsed(response, "403.html")
@@ -153,7 +164,7 @@ class DashboardPermissionTests(TestCase):
         create_user("second-student", User.Role.STUDENT)
         self.client.force_login(self.users[User.Role.ADMIN])
         response = self.client.get(reverse("accounts:admin_dashboard"))
-        self.assertEqual(response.context["counts"], {"total": 4, "students": 2, "staff": 1, "administrators": 1})
+        self.assertEqual(response.context["counts"], {"total": 7, "students": 2, "staff": 1, "administrators": 1})
 
 
 class ProfileAndPasswordTests(TestCase):
@@ -184,7 +195,7 @@ class DemoUsersCommandTests(TestCase):
         output = StringIO()
         call_command("create_demo_users", stdout=output)
         call_command("create_demo_users", stdout=output)
-        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(User.objects.count(), len(DEMO_USERS))
         for definition in DEMO_USERS:
             self.assertTrue(User.objects.get(username=definition["username"]).check_password(definition["password"]))
         self.assertTrue(User.objects.get(username="admin_demo").is_superuser)
