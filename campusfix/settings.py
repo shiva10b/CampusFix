@@ -100,10 +100,13 @@ if PRODUCTION and not DATABASE_URL:
     )
 
 if DATABASE_URL:
+    database_conn_max_age = int(
+        os.getenv("DATABASE_CONN_MAX_AGE", "60" if PRODUCTION else "0")
+    )
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
-            conn_max_age=0,
+            conn_max_age=database_conn_max_age,
             conn_health_checks=True,
             ssl_require=PRODUCTION,
         )

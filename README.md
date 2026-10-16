@@ -296,6 +296,10 @@ Do not run the demo-data commands against production. **Never publish, reuse, or
 - Verify the bucket is private when signed URLs are enabled, restrict credentials to that bucket, and enable provider-side encryption, backups, and lifecycle rules as appropriate.
 - Test authentication, CSRF-protected forms, image upload/display, custom errors, reports, and exports on a Vercel preview before promoting it.
 - HSTS defaults to one year with subdomains and preload in production. Confirm every subdomain is HTTPS-only before the first public deployment; tune the documented HSTS variables if necessary.
+- Production database connections are reused for 60 seconds by default to reduce
+  Neon connection setup latency on warm Vercel functions. Set
+  `DATABASE_CONN_MAX_AGE` in Vercel only if the deployment needs a different
+  reuse period.
 
 ## Useful checks
 
