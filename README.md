@@ -101,10 +101,18 @@ The command works only when `DEBUG=True`, can be run repeatedly without duplicat
 
 ## Complaint reference and demonstration data
 
-Create or refresh the seven categories and seven campus locations:
+Create or refresh the seven categories and seven campus locations locally:
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py create_reference_data
+```
+
+For a newly migrated production database, run the same command with the
+explicit production flag. This creates only complaint categories and campus
+locations; it does not create users or demo complaints:
+
+```powershell
+python manage.py create_reference_data --production
 ```
 
 Create or refresh the demo users, reference data, and three submitted complaints for `student_demo`:

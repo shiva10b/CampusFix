@@ -209,6 +209,12 @@ class ReferenceDataCommandTests(TestCase):
         with self.assertRaises(CommandError):
             call_command("create_reference_data")
 
+    @override_settings(DEBUG=False)
+    def test_reference_command_allows_explicit_production_initialization(self):
+        call_command("create_reference_data", production=True, stdout=StringIO())
+        self.assertEqual(ComplaintCategory.objects.count(), len(CATEGORIES))
+        self.assertEqual(CampusLocation.objects.count(), len(LOCATIONS))
+
 
 class DemoComplaintCommandTests(TestCase):
     @override_settings(DEBUG=True)

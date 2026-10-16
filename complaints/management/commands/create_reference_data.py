@@ -26,11 +26,20 @@ LOCATIONS = (
 
 
 class Command(BaseCommand):
-    help = "Create or refresh local complaint categories and campus locations."
+    help = "Create or refresh complaint categories and campus locations."
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--production",
+            action="store_true",
+            help="Allow reference data initialization when DEBUG=False.",
+        )
 
     def handle(self, *args, **options):
-        if not settings.DEBUG:
-            raise CommandError("Reference demo data can only be created when DEBUG=True.")
+        if not settings.DEBUG and not options["production"]:
+            raise CommandError(
+                "Production reference data requires the explicit --production flag."
+            )
         created_categories = created_locations = 0
         for name, description in CATEGORIES.items():
             _, created = ComplaintCategory.objects.update_or_create(
